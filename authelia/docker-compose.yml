@@ -1,0 +1,29 @@
+services:
+  authelia:
+    image: authelia/authelia:latest
+    container_name: authelia
+    restart: unless-stopped
+    networks:
+      - proxy_net
+    environment:
+      TZ: Europe/Moscow
+    volumes:
+      - ./authelia:/config
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: authelia-redis
+    restart: unless-stopped
+    networks:
+      - proxy_net
+    volumes:
+      - authelia_redis:/data
+
+volumes:
+  authelia_redis:
+
+networks:
+  proxy_net:
+    external: true
