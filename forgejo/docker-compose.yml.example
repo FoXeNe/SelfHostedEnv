@@ -1,0 +1,31 @@
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:14
+    container_name: forgejo
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    environment:
+      - USER_UID=1001
+      - USER_GID=1001
+      - FORGEJO__server__DOMAIN=git.foxene.ru
+      - FORGEJO__server__ROOT_URL=https://git.example.ru
+      - FORGEJO__server__SSH_DOMAIN=git.example.ru
+      - FORGEJO__database__DB_TYPE=sqlite3
+      - FORGEJO__database__PATH=/data/forgejo.db
+      - FORGEJO__server__SSH_PORT=2223
+      - FORGEJO__migrations__ALLOWED_DOMAINS=github.com,api.github.com,codeberg.org
+      - FORGEJO__mirror__ENABLED=true
+      - FORGEJO__mirror__DEFAULT_INTERVAL=8h
+    restart: unless-stopped
+    networks:
+      - proxy_net
+    volumes:
+      - ./forgejo:/data
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 3000:3000
+      - 2223:22
+networks:
+  proxy_net:
+    external: true

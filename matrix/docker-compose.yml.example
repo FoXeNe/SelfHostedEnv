@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: matrix_synapse
+    restart: unless-stopped
+    networks:
+      - proxy_net
+    volumes:
+      - ./data:/data
+    environment:
+      - SYNAPSE_SERVER_NAME=matrix.example.ru
+      - SYNAPSE_REPORT_STATS=no
+
+networks:
+  proxy_net:
+    external: true
+

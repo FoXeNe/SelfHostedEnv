@@ -1,0 +1,20 @@
+services:
+  zerobyte:
+    image: ghcr.io/nicotsx/zerobyte:v0.30
+    container_name: zerobyte
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    ports:
+      - 4096:4096
+    devices:
+      - /dev/fuse:/dev/fuse
+    environment:
+      - TZ=Europe/Moscow # Set your timezone here
+      - BASE_URL=http://192.168.1.228:4096 # URL you will use to access Zerobyte
+      - APP_SECRET=super_secret_secret # Generate your own secret with `openssl rand -hex 32`
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/dockeruser/services/zerobyte/data:/var/lib/zerobyte
+      - /home/dockeruser/services:/home/dockeruser/services:ro
+networks: {}
