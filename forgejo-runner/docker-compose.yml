@@ -11,6 +11,10 @@ services:
     volumes:
       - ./dind_data:/var/lib/docker
     restart: unless-stopped
+    networks:
+      - runner-net
+      - default
+
   runner:
     image: data.forgejo.org/forgejo/runner:11
     links:
@@ -27,8 +31,13 @@ services:
       - ./data:/data
     restart: unless-stopped
     # sleep
-    command: '/bin/sh -c "while : ; do sleep 1 ; done ;"'
+    # command: '/bin/sh -c "while : ; do sleep 1 ; done ;"'
     # daemon
-    #command: /bin/sh -c "sleep 5; forgejo-runner daemon --config /data/config.yml"
-networks: {}
+    command: /bin/sh -c "sleep 5; forgejo-runner daemon --config /data/config.yml"
+    networks:
+      - runner-net
+      - default
 
+networks:
+  runner-net:
+    driver: bridge
