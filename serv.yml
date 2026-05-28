@@ -1,0 +1,59 @@
+---
+- name: home serv docker deploy
+  hosts: homeserv
+  become: yes
+  vars_files:
+    - secret.yml
+
+  vars:
+    project_dir: "/opt/services"
+    repo_url: "https://github.com/FoXeNe/SelfHostedEnv.git"
+
+    services:
+      - authelia
+      - dockge
+      - filebrowser
+      - forgejo
+      - homepage
+      - immich
+      - matrix
+      - monitoring
+      - npm
+      - pihole
+      - syncthing
+      - vaultwarden
+      - zerobyte
+
+  tasks:
+    - name: install docker
+      apt:
+        name:
+          - git
+          - docker.io
+          - docker-compose
+        state: present
+        update_cache: yes
+
+    - name: create project dir
+      file:
+        path: "{{ project_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: git clone
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ project_dir }}"
+        force: yes
+
+    - name: deploy all containers
+      shell: "docker-compose up -d"
+      args:
+        chdir: "{{ project_dir }}/{{ item }}"
+      loop: "{{ services }}"
+
+    - name: add user to sudo group
+      user:
+        name: "{{ ssh_user }}"
+        groups: sudo
+        append: true

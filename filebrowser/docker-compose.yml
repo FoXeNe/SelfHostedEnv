@@ -1,0 +1,13 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser
+    container_name: filebrowser
+    user: 0:0
+    ports:
+      - 8090:80
+    volumes:
+      - /home/dockeruser/files:/srv
+      - ./database:/database
+      - ./config:/config
+    restart: unless-stopped
+networks: {}

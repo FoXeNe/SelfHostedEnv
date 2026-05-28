@@ -1,0 +1,17 @@
+services:
+  dockge:
+    name: dockge
+    image: louislam/dockge:1
+    restart: unless-stopped
+    ports:
+      - 5001:5001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+      - /home/dockeruser/services:/home/dockeruser/services
+    environment:
+      - DOCKGE_STACKS_DIR=${STACKS_DIR}
+networks:
+  proxy_net:
+    external: true
+
