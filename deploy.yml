@@ -1,7 +1,6 @@
 ---
 - name: services deployment
   hosts: all
-  become: true
 
   vars_files:
     - secret.yml
