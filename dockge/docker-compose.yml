@@ -10,10 +10,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data:/app/data
       - /home/dockeruser/services:/home/dockeruser/services
-    env_file:
-      - .env
     environment:
-      - DOCKGE_STACKS_DIR=${STACKS_DIR}
+      - DOCKGE_STACKS_DIR={{ stack_dir }}
 networks:
   proxy_net:
     external: true
