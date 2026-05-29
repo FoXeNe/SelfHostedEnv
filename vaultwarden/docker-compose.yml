@@ -9,6 +9,8 @@ services:
       SIGNUPS_ALLOWED: "false"
     volumes:
       - ./vw-data:/data
+    env_file:
+      - .env
     networks:
       - proxy_net
 networks:
