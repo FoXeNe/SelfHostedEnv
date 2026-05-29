@@ -13,7 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: install dependencies
-        # Добавили пакет docker-cli-compose
         run: apk add --no-cache ansible docker-cli docker-cli-compose
       - name: run Ansible
         run: ansible-playbook deploy.yml -i "localhost," --connection=local
