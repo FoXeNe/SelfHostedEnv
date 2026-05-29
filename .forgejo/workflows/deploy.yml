@@ -17,7 +17,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y ansible openssh-client
-          ansible-galaxy collection install community.docker
+          ansible-galaxy collection install 'community.docker:<=3.12.2'
 
       - name: setup ssh and inventory
         env:
