@@ -9,15 +9,31 @@ jobs:
   deploy:
     runs-on: docker
     container:
-      image: node:20-alpine
+      image: node:20-slim 
     steps:
       - uses: actions/checkout@v4
+
       - name: install dependencies
-        run: apk add --no-cache ansible docker-cli docker-cli-compose
+        run: |
+          apt-get update
+          apt-get install -y ansible openssh-client
+          ansible-galaxy collection install community.docker
+
+      - name: setup ssh and inventory
+        env:
+          INVENTORY: ${{ secrets.ANSIBLE_INVENTORY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+
+          echo "$INVENTORY" > inventory.ini
+
       - name: run ansible
         env:
           VAULT_PASS: ${{ secrets.VAULT_PASSWORD }}
         run: |
           echo "$VAULT_PASS" > .vault_pass
-          ansible-playbook deploy.yml -i "localhost," --connection=local --vault-password-file .vault_pass
+          ansible-playbook deploy.yml -i inventory.ini --vault-password-file .vault_pass
           rm .vault_pass
