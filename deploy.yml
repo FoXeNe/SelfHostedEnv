@@ -1,0 +1,56 @@
+---
+- name: idempotent docker services deployment
+  hosts: all
+  become: true
+
+  vars_files:
+    - secret.yml
+
+  vars:
+    services_path: "/home/dockeruser/services"
+
+    apps:
+      - authelia
+      - forgejo
+      - immich
+      - vaultwarden
+      - npm
+      - monitoring
+      - dockge
+      - filebrowser
+      - homepage
+      - matrix
+      - pihole
+      - syncthing
+      - zerobyte
+
+  tasks:
+    - name: be sure that application directories exist
+      ansible.builtin.file:
+        path: "{{ services_path }}/{{ item }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ apps }}"
+
+    - name: copy docker compose conf
+      ansible.builtin.template:
+        src: "{{ item }}/docker-compose.yml" 
+        dest: "{{ services_path }}/{{ item }}/docker-compose.yml"
+        mode: '0644'
+      loop: "{{ apps }}"
+      register: compose_templates
+
+    - name: restart updated docker compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ services_path }}/{{ item.item }}"
+        state: present
+        recreate: always
+      loop: "{{ compose_templates.results }}"
+      when: item.changed
+
+    - name: be sure all other services are running
+      community.docker.docker_compose_v2:
+        project_src: "{{ services_path }}/{{ item }}"
+        state: present
+      loop: "{{ apps }}"
+      when: item not in (compose_templates.results | selectattr('changed') | map(attribute='item.item') | list)
