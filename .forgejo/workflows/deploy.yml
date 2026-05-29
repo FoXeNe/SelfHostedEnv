@@ -9,15 +9,14 @@ jobs:
   deploy:
     runs-on: docker
     container:
-      image: node:20-alpine 
+      image: node:20-alpine
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Ansible
+      - name: Install dependencies
         run: |
-          apk add --no-cache ansible
-
+          apk add --no-cache ansible docker-cli
+          
       - name: Run Ansible
         run: |
           ansible-playbook deploy.yml -i "localhost," --connection=local
