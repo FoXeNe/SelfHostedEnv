@@ -5,12 +5,10 @@ services:
     image: vaultwarden/server:latest
     restart: unless-stopped
     environment:
-      DOMAIN: ${DOMAIN}
+      DOMAIN: {{ domain }}
       SIGNUPS_ALLOWED: "false"
     volumes:
       - ./vw-data:/data
-    env_file:
-      - .env
     networks:
       - proxy_net
 networks:

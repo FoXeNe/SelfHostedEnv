@@ -14,5 +14,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: install dependencies
         run: apk add --no-cache ansible docker-cli docker-cli-compose
-      - name: run Ansible
-        run: ansible-playbook deploy.yml -i "localhost," --connection=local
+      - name: Run Ansible
+        env:
+          VAULT_PASS: ${{ secrets.VAULT_PASSWORD }}
+        run: |
+          echo "$VAULT_PASS" > .vault_pass
+          ansible-playbook deploy.yml -i "localhost," --connection=local --vault-password-file .vault_pass
+          rm .vault_pass
