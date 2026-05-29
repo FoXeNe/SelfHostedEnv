@@ -40,19 +40,9 @@
       loop: "{{ apps }}"
       register: compose_templates
 
-    - name: restart updated docker compose
-      community.docker.docker_compose_v2:
-        project_src: "{{ services_path }}/{{ item.item }}"
-        state: present
-        recreate: always
-        docker_host: unix:///var/run/docker.sock
-      loop: "{{ compose_templates.results }}"
-      when: item.changed
-
-    - name: be sure all other services are running
+    - name: apply docker compose and start services
       community.docker.docker_compose_v2:
         project_src: "{{ services_path }}/{{ item }}"
         state: present
-        docker_host: unix:///var/run/docker.sock # <--- И ВОТ СЮДА ТОЖЕ
+        docker_host: unix:///var/run/docker.sock
       loop: "{{ apps }}"
-      when: item not in (compose_templates.results | selectattr('changed') | map(attribute='item.item') | list)
